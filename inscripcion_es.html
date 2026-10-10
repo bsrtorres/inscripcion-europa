@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#08164a">
+    <title>EUROPA - Inscripción</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        /* ── Inscripción: misma paleta azul/oro de "Conexión Europa" ── */
+        :root {
+            --eu-950: #050d2e;
+            --eu-900: #08164a;
+            --eu-800: #0c2170;
+            --eu-700: #123097;
+            --eu-600: #1d44c4;
+            --gold: #ffcc00;
+            --gold-soft: #ffe066;
+            --red: #e63946;
+            --green: #2fd27a;
+            --ink: #0d1a4d;
+            --ink-dim: #5a6690;
+            --line-soft: #e3e8f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--eu-900);
+            background-image:
+                radial-gradient(ellipse 80% 55% at 50% 0%, rgba(29, 68, 196, 0.85) 0%, transparent 70%),
+                linear-gradient(180deg, var(--eu-800) 0%, var(--eu-950) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            padding: 20px 16px;
+        }
+
+        h1 {
+            margin-top: 56px;
+            font-size: clamp(1.7em, 6vw, 2.6em);
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-align: center;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .sub { color: #b8c2ec; margin: 8px 0 24px; text-align: center; font-size: 1.1em; }
+
+        .card {
+            position: relative;
+            background: #fff;
+            border-radius: 24px;
+            padding: 30px 28px 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(255, 204, 0, 0.35);
+            color: var(--ink);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+        }
+        .card + .card { margin-top: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--eu-700) 0%, var(--eu-600) 60%, var(--gold) 60%, var(--gold) 100%);
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--eu-700); font-size: 1.05em; font-weight: 700; margin-bottom: 8px; }
+        .form-group input {
+            width: 100%;
+            padding: 15px 16px;
+            font: inherit;
+            font-size: 1.1em;
+            color: var(--ink);
+            border: 2px solid #dfe4f3;
+            border-radius: 12px;
+            background: #f7f8fd;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            background: #fff;
+            border-color: var(--eu-600);
+            box-shadow: 0 0 0 4px rgba(29, 68, 196, 0.15);
+        }
+        .error-message { color: var(--red); font-size: 0.9em; font-weight: 600; margin-top: 6px; display: none; }
+        .error-message.show { display: block; }
+
+        #btnApuntar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 100%);
+            color: var(--eu-900);
+            border: none;
+            padding: 18px;
+            font: inherit;
+            font-size: 1.3em;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            border-radius: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 8px 22px rgba(255, 204, 0, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+            transition: transform 0.15s ease, opacity 0.2s ease;
+        }
+        #btnApuntar:hover { transform: translateY(-2px); }
+        #btnApuntar:active { transform: translateY(1px); }
+        #btnApuntar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Confirmación tras apuntarse */
+        #confirmacion {
+            display: none;
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #e9fbf1;
+            border: 1px solid rgba(47, 210, 122, 0.5);
+            color: #146c3d;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.4;
+        }
+        #confirmacion.show { display: block; animation: fadeIn 0.4s ease-out; }
+        #confirmacion b { font-size: 1.5em; color: var(--eu-700); }
+
+        /* Cola */
+        .card h3 { color: var(--eu-800); font-size: 1.2em; font-weight: 800; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .badge { background: var(--eu-700); color: #fff; border-radius: 999px; padding: 2px 12px; font-size: 0.85em; font-variant-numeric: tabular-nums; }
+        .cola { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .cola li {
+            display: grid;
+            grid-template-columns: 34px 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 14px 9px 9px;
+            background: #f5f7fd;
+            border: 1px solid var(--line-soft);
+            border-radius: 12px;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .cola li.yo { background: #fff7d1; border-color: rgba(255, 204, 0, 0.7); }
+        .cola .pos {
+            display: grid; place-items: center;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--eu-700); color: #fff; font-weight: 800;
+        }
+        .cola li:first-child .pos { background: var(--gold); color: var(--eu-900); }
+        .cola .nombre { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cola .bandera { font-size: 1.2em; }
+        .cola .vacia { display: block; text-align: center; color: var(--ink-dim); background: none; border: none; }
+
+        .status { font-size: 0.85em; margin-top: 18px; color: #b8c2ec; text-align: center; }
+
+        .btn-menu {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 10001;
+            padding: 8px 16px;
+            background: rgba(5, 13, 46, 0.6);
+            color: #fff;
+            border: 1px solid rgba(255, 204, 0, 0.5);
+            border-radius: 999px;
+            font: 600 14px 'Outfit', 'Segoe UI', sans-serif;
+            text-decoration: none;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background 0.2s ease;
+        }
+        .btn-menu:hover { background: rgba(18, 48, 151, 0.85); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        @media (max-width: 480px) {
+            .card { padding: 26px 18px 20px; border-radius: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-menu">⬅ Idioma</a>
+
+    <h1>📝 INSCRIPCIÓN</h1>
+    <p class="sub">Apúntate y espera tu turno para jugar a Conexión Europa</p>
+
+    <div class="card">
+        <div class="form-group">
+            <label for="playerName">👤 Nombre</label>
+            <input type="text" id="playerName" placeholder="Introduce tu nombre" autocomplete="off" maxlength="40">
+            <span class="error-message" id="nameError">Por favor, introduce tu nombre</span>
+        </div>
+        <div class="form-group">
+            <label for="playerEmail">📧 Email</label>
+            <input type="email" id="playerEmail" placeholder="tu@email.com" autocomplete="off">
+            <span class="error-message" id="emailError">Por favor, introduce un email válido</span>
+        </div>
+        <button id="btnApuntar" disabled>✋ APUNTARME</button>
+        <div id="confirmacion"></div>
+    </div>
+
+    <div class="card">
+        <h3>⏳ Cola de espera <span class="badge" id="total">0</span></h3>
+        <ul class="cola" id="cola"></ul>
+    </div>
+
+    <div id="status" class="status">Conectando al broker MQTT...</div>
+
+    <script>
+        // CONFIGURACIÓN
+        const IDIOMA = 'es';
+        const prefix = 'sanjealcantarilla/';
+        const TOPIC_COLA = prefix + 'cola/'; // una entrada retenida por jugador: cola/<id>
+
+        const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+
+        const nameInput = document.getElementById('playerName');
+        const emailInput = document.getElementById('playerEmail');
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const btn = document.getElementById('btnApuntar');
+        const confirmacion = document.getElementById('confirmacion');
+        const colaUl = document.getElementById('cola');
+        const totalSpan = document.getElementById('total');
+        const statusDiv = document.getElementById('status');
+
+        const cola = new Map(); // id -> {id, nombre, email, idioma, t}
+        let ultimoId = null;    // última inscripción hecha desde este dispositivo
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function pintarCola() {
+            const lista = [...cola.values()].sort((a, b) => a.t - b.t);
+            totalSpan.textContent = lista.length;
+            colaUl.innerHTML = '';
+            if (lista.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'vacia';
+                li.textContent = 'No hay nadie esperando';
+                colaUl.appendChild(li);
+            }
+            lista.forEach((j, i) => {
+                const li = document.createElement('li');
+                if (j.id === ultimoId) li.className = 'yo';
+                const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = i + 1;
+                const nom = document.createElement('span'); nom.className = 'nombre'; nom.textContent = j.nombre;
+                const ban = document.createElement('span'); ban.className = 'bandera'; ban.textContent = j.idioma === 'it' ? '🇮🇹' : '🇪🇸';
+                li.append(pos, nom, ban);
+                colaUl.appendChild(li);
+            });
+            // Si mi inscripción ya salió de la cola, es que le toca jugar
+            if (ultimoId && confirmacion.classList.contains('show')) {
+                const pos = lista.findIndex(j => j.id === ultimoId);
+                if (pos >= 0) {
+                    confirmacion.innerHTML = `✅ ¡Apuntado!<br>Tu posición en la cola: <b>${pos + 1}</b>`;
+                } else {
+                    confirmacion.innerHTML = '🎮 ¡Te toca! Ve a la pantalla del juego';
+                }
+            }
+        }
+
+        [nameInput, emailInput].forEach(el => el.addEventListener('input', () => {
+            nameError.classList.remove('show');
+            emailError.classList.remove('show');
+        }));
+
+        btn.addEventListener('click', () => {
+            const nombre = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            let ok = true;
+            if (nombre === '') { nameError.classList.add('show'); ok = false; }
+            if (!validateEmail(email)) { emailError.classList.add('show'); ok = false; }
+            if (!ok) return;
+
+            const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+            const entrada = { id, nombre, email, idioma: IDIOMA, t: Date.now() };
+            client.publish(TOPIC_COLA + id, JSON.stringify(entrada), { retain: true, qos: 1 });
+
+            ultimoId = id;
+            cola.set(id, entrada);
+            nameInput.value = '';
+            emailInput.value = '';
+            confirmacion.classList.add('show');
+            pintarCola();
+        });
+
+        client.on('connect', () => {
+            statusDiv.textContent = '🟢 Conectado';
+            btn.disabled = false;
+            client.subscribe(TOPIC_COLA + '+', { qos: 1 });
+        });
+
+        client.on('message', (topic, message) => {
+            if (!topic.startsWith(TOPIC_COLA)) return;
+            const id = topic.slice(TOPIC_COLA.length);
+            const texto = message.toString();
+            if (texto === '') {
+                cola.delete(id); // borrada: ya ha pasado a jugar
+            } else {
+                try { cola.set(id, JSON.parse(texto)); } catch (e) { return; }
+            }
+            pintarCola();
+        });
+
+        client.on('error', () => { statusDiv.textContent = '🔴 Error de conexión'; });
+        client.on('offline', () => { statusDiv.textContent = '🟠 Sin conexión'; btn.disabled = true; });
+
+        pintarCola();
+    </script>
+</body>
+</html>

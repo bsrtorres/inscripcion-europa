@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#08164a">
+    <title>Conexión Europa – Inscripción</title>
+    <style>
+        /* ── Paleta "Conexión Europa": azul y oro de la bandera europea + rojo Sanje ── */
+        :root {
+            --eu-950: #050d2e;
+            --eu-900: #08164a;
+            --eu-800: #0c2170;
+            --eu-700: #123097;
+            --eu-600: #1d44c4;
+            --gold: #ffcc00;
+            --gold-soft: #ffe066;
+            --red: #e63946;
+            --text: #f4f6ff;
+            --text-dim: #b8c2ec;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-hover: rgba(255, 255, 255, 0.13);
+            --line: rgba(255, 255, 255, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--eu-900);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29, 68, 196, 0.85) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255, 204, 0, 0.10) 0%, transparent 70%),
+                linear-gradient(180deg, var(--eu-800) 0%, var(--eu-950) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Corona de 12 estrellas de fondo (decorativa) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: min(120vw, 980px);
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'%3E%3Cdefs%3E%3Cpath id='s' d='M0,-7 L1.6,-2.2 6.7,-2.2 2.6,0.8 4.1,5.7 0,2.7 -4.1,5.7 -2.6,0.8 -6.7,-2.2 -1.6,-2.2Z' fill='%23ffcc00'/%3E%3C/defs%3E%3Cg%3E%3Cuse href='%23s' y='-80'/%3E%3Cuse href='%23s' transform='rotate(30) translate(0,-80) rotate(-30)'/%3E%3Cuse href='%23s' transform='rotate(60) translate(0,-80) rotate(-60)'/%3E%3Cuse href='%23s' transform='rotate(90) translate(0,-80) rotate(-90)'/%3E%3Cuse href='%23s' transform='rotate(120) translate(0,-80) rotate(-120)'/%3E%3Cuse href='%23s' transform='rotate(150) translate(0,-80) rotate(-150)'/%3E%3Cuse href='%23s' transform='rotate(180) translate(0,-80) rotate(-180)'/%3E%3Cuse href='%23s' transform='rotate(210) translate(0,-80) rotate(-210)'/%3E%3Cuse href='%23s' transform='rotate(240) translate(0,-80) rotate(-240)'/%3E%3Cuse href='%23s' transform='rotate(270) translate(0,-80) rotate(-270)'/%3E%3Cuse href='%23s' transform='rotate(300) translate(0,-80) rotate(-300)'/%3E%3Cuse href='%23s' transform='rotate(330) translate(0,-80) rotate(-330)'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;
+            opacity: 0.13;
+            pointer-events: none;
+            z-index: -1;
+            animation: starsSpin 240s linear infinite;
+        }
+
+        @keyframes starsSpin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        section, .qr-zona { position: relative; z-index: 1; width: 100%; }
+
+        .logo {
+            max-width: 120px;
+            max-height: 96px;
+            padding: 10px 14px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 0 4px rgba(255, 204, 0, 0.35);
+            margin-bottom: 26px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-weight: 700;
+            font-size: clamp(2.2em, 7vw, 3.6em);
+            letter-spacing: 0.01em;
+            line-height: 1.1;
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Subrayado dorado bajo el título */
+        h1::after {
+            content: '';
+            display: block;
+            width: 72px;
+            height: 4px;
+            margin: 14px auto 0;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+            box-shadow: 0 0 16px rgba(255, 204, 0, 0.6);
+        }
+
+        .subtitle {
+            font-weight: 400;
+            font-size: 1.1em;
+            letter-spacing: 0.04em;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 34px 24px 30px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.04) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            color: var(--text);
+            font: inherit;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        /* Línea dorada superior que aparece al pasar por encima */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--gold);
+            box-shadow: 0 0 14px var(--gold);
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .card:hover,
+        .card:focus-visible {
+            transform: translateY(-6px);
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.07) 100%);
+            border-color: rgba(255, 204, 0, 0.55);
+            box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(255, 204, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            outline: none;
+        }
+
+        .card:hover::before,
+        .card:focus-visible::before { width: 60%; }
+
+        .card:active { transform: translateY(-2px); }
+
+        .card .icon {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            height: 92px;
+            font-size: 3.2em;
+            line-height: 1;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 70%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .icon { transform: scale(1.08) rotate(-4deg); }
+
+        .card h2 {
+            font-size: 1.45em;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .card p {
+            font-size: 0.98em;
+            color: var(--text-dim);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.85em;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            opacity: 0.85;
+        }
+
+        footer button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 18px;
+            color: var(--text);
+            font: inherit;
+            letter-spacing: 0.06em;
+            text-transform: none;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        footer button:hover,
+        footer button:focus-visible {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ── QR para entrar desde el móvil ── */
+        .qr-zona {
+            margin-top: 34px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .qr {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 14px 22px 14px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+        }
+
+        .qr img {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.5);
+        }
+
+        .qr p {
+            font-size: 1.05em;
+            line-height: 1.55;
+            color: var(--text-dim);
+        }
+
+        .qr p strong { color: var(--text); font-size: 1.1em; }
+
+        /* En el móvil ya están dentro: no hace falta el QR */
+        @media (max-width: 700px) {
+            .qr-zona { display: none; }
+        }
+
+        /* Móvil: tarjetas más compactas para que quepan las opciones */
+        @media (max-width: 520px) {
+            .logo { max-width: 96px; max-height: 76px; margin-bottom: 18px; }
+            .subtitle { margin-bottom: 26px; }
+            .menu { gap: 14px; }
+            .card { display: grid; grid-template-columns: 64px 1fr; align-content: center; column-gap: 16px; row-gap: 2px; text-align: left; padding: 18px 20px; }
+            .card .icon { grid-row: span 2; width: 64px; height: 64px; font-size: 2.2em; margin-bottom: 0; }
+            .card h2 { font-size: 1.25em; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="img/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+    <h1>Conexión Europa</h1>
+    <p class="subtitle">📝 Inscripción · Iscrizione<br>Elige tu idioma · Scegli la tua lingua</p>
+
+    <nav class="menu">
+        <a class="card" href="inscripcion_es.html" lang="es">
+            <span class="icon">🇪🇸</span>
+            <h2>Español</h2>
+            <p>Apúntate a la cola</p>
+        </a>
+        <a class="card" href="inscripcion_it.html" lang="it">
+            <span class="icon">🇮🇹</span>
+            <h2>Italiano</h2>
+            <p>Mettiti in coda</p>
+        </a>
+    </nav>
+
+    <footer>Feria · Fiera 2026</footer>
+</body>
+</html>
